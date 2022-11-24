@@ -1,5 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from 'firebase/auth'
+import { db } from '../firebase.config'
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg'
 import visibilityIcon from '../assets/svg/visibilityIcon.svg'
 
@@ -24,6 +30,26 @@ const SignUp = () => {
   const navigate = useNavigate()
 
   const { name, email, password } = formData
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+
+    try {
+      const auth = getAuth()
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      )
+      updateProfile(auth.currentUser, {
+        displayName: name,
+      })
+
+      navigate('/')
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <>
       <div className="pageContainer">
@@ -31,7 +57,7 @@ const SignUp = () => {
           <p className="pageHeader">Sign Up!</p>
         </header>
         <main>
-          <form>
+          <form onSubmit={onSubmit}>
             <input
               type="text"
               name="name"
