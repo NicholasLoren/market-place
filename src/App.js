@@ -8,16 +8,20 @@ import SignUp from './pages/SignUp'
 import Offers from './pages/Offers'
 
 function App() {
+  const loggedIn = null
   return (
     <>
       <Router>
         <Routes>
           <Route path="/" element={<Explore />} />
           <Route path="/offers" element={<Offers />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route
+            path="/profile"
+            element={loggedIn === undefined ? <Profile /> : <SignIn />}
+          />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
         <NavBar />
       </Router>
