@@ -11,13 +11,16 @@ const SignIn = () => {
   })
 
   const onChange = (e) => {
-    const { id, name, value } = e.target
+    const { id, value } = e.target
 
     setFormData({
       ...formData,
       [id]: value,
     })
   }
+
+  //Initialise use navigate
+  const navigate = useNavigate()
 
   const { email, password } = formData
   return (
@@ -44,6 +47,7 @@ const SignIn = () => {
                 id="password"
                 className="passwordInput"
                 placeholder="Password"
+                value={password}
                 onChange={onChange}
               />
               <img
@@ -64,11 +68,11 @@ const SignIn = () => {
                 <ArrowRightIcon fill="#fff" width="34px" height="34px" />
               </button>
             </div>
-            {/* Google Oauth */}
-            <Link to="/sign-in" className="signUpLink">
-              Sign Up Instead
-            </Link>
           </form>
+          {/* Google Oauth */}
+          <Link to="/sign-up" className="registerLink">
+            Sign Up Instead
+          </Link>
         </main>
       </div>
     </>
