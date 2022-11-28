@@ -48,6 +48,7 @@ const SignUp = () => {
       //Saving a new user to our database
       const formDataCopy = { ...formData }
       delete formDataCopy.password
+      formDataCopy.timestamp = serverTimestamp()
 
       setDoc(doc(db, 'users', user.uid), formDataCopy)
 
