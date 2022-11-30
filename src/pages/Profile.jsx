@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { getAuth, updateProfile } from 'firebase/auth'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { updateDoc, doc } from 'firebase/firestore'
 import { db } from '../firebase.config'
 import { toast } from 'react-toastify'
+import ArrowRightIcon from '../assets/svg/keyboardArrowRightIcon.svg'
+import HomeIcon from '../assets/svg/homeIcon.svg'
+
 const Profile = () => {
   const auth = getAuth()
   const [formData, setFormData] = useState({
@@ -82,6 +85,12 @@ const Profile = () => {
             />
           </form>
         </div>
+
+        <Link to="/create-listing" className="createListing">
+          <img src={HomeIcon} alt="Home" />
+          <p>Sell or rent your home</p>
+          <img src={ArrowRightIcon} alt="arrow right" />
+        </Link>
       </main>
     </div>
   )
