@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg'
 import visibilityIcon from '../assets/svg/visibilityIcon.svg'
+import Oauth from '../components/Oauth'
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -89,7 +90,7 @@ const SignIn = () => {
               </button>
             </div>
           </form>
-          {/* Google Oauth */}
+          <Oauth />
           <Link to="/sign-up" className="registerLink">
             Sign Up Instead
           </Link>
