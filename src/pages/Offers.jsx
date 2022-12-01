@@ -15,6 +15,7 @@ import Spinner from '../components/Spinner'
 import ListingItem from './../components/ListingItem'
 
 function Offers() {
+  // eslint-disable-next-line
   const params = useParams()
   const [listings, setListings] = useState(null)
   const [loading, setLoading] = useState(true)

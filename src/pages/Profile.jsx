@@ -85,7 +85,7 @@ const Profile = () => {
       await deleteDoc(doc(db, 'listing', listingId))
 
       const updatedListings = listings.filter(
-        (listing) => listing.id != listingId
+        (listing) => listing.id !== listingId
       )
       setListings(updatedListings)
       toast.success('Listing removed from list')

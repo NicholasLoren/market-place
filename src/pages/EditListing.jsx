@@ -14,6 +14,7 @@ import Spinner from '../components/Spinner.jsx'
 import { toast } from 'react-toastify'
 function EditListing() {
   //Initialize our state for the form
+  // eslint-disable-next-line
   const [geolocationEnabled, setGeolocationEnabled] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -59,11 +60,11 @@ function EditListing() {
   //redirect if listing is not for users
 
   useEffect(() => {
-    if (listing && listing.userRef != auth.currentUser.uid) {
+    if (listing && listing.userRef !== auth.currentUser.uid) {
       toast.error('You can not edit this listing')
       navigate('/')
     }
-  }, [])
+  }, [auth.currentUser.uid, listing, navigate])
 
   //fetches listing to edit
   useEffect(() => {
@@ -101,7 +102,7 @@ function EditListing() {
     }
 
     return () => (isMounted.current = false)
-  }, [isMounted])
+  }, [isMounted, auth, navigate])
 
   if (loading) return <Spinner />
 
@@ -146,6 +147,8 @@ function EditListing() {
               case 'running':
                 console.log('Upload is running')
                 break
+              default:
+                console.log('Something went rong')
             }
           },
           (error) => {
@@ -221,7 +224,7 @@ function EditListing() {
             <button
               type="button"
               id="type"
-              className={type == 'sale' ? 'formButtonActive' : 'formButton'}
+              className={type === 'sale' ? 'formButtonActive' : 'formButton'}
               onClick={onMutate}
               value="sale"
             >
@@ -230,7 +233,7 @@ function EditListing() {
             <button
               type="button"
               id="type"
-              className={type == 'rent' ? 'formButtonActive' : 'formButton'}
+              className={type === 'rent' ? 'formButtonActive' : 'formButton'}
               onClick={onMutate}
               value="rent"
             >
