@@ -1,25 +1,98 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getAuth, updateProfile } from 'firebase/auth'
 import { useNavigate, Link } from 'react-router-dom'
-import { updateDoc, doc } from 'firebase/firestore'
+import {
+  updateDoc,
+  doc,
+  collection,
+  query,
+  getDocs,
+  orderBy,
+  where,
+  deleteDoc,
+  startAfter,
+  limit,
+} from 'firebase/firestore'
 import { db } from '../firebase.config'
 import { toast } from 'react-toastify'
 import ArrowRightIcon from '../assets/svg/keyboardArrowRightIcon.svg'
 import HomeIcon from '../assets/svg/homeIcon.svg'
-
+import ListingItem from './../components/ListingItem'
 const Profile = () => {
   const auth = getAuth()
   const [formData, setFormData] = useState({
     name: auth.currentUser.displayName,
     email: auth.currentUser.email,
   })
+  const [lastFetchedListing, setLastFetchedListing] = useState(null)
   const [changeDetails, setChangeDetails] = useState(false)
   const navigate = useNavigate()
   const { name, email } = formData
+  const [loading, setLoading] = useState(true)
+  const [listings, setListings] = useState(null)
+
+  useEffect(() => {
+    const fetchUserListings = async () => {
+      const listingsRef = collection(db, 'listing')
+      const q = query(
+        listingsRef,
+        where('userRef', '==', auth.currentUser.uid),
+        orderBy('timestamp', 'desc'),
+        limit(10)
+      )
+      const querySnap = await getDocs(q)
+      const lastVisible = querySnap.docs[querySnap.docs.length - 1]
+      setLastFetchedListing(lastVisible)
+      let listings = []
+      querySnap.forEach((doc) => {
+        return listings.push({ id: doc.id, data: doc.data() })
+      })
+      setListings(listings)
+      setLoading(false)
+    }
+
+    fetchUserListings()
+  }, [auth.currentUser.uid])
+
+  //Load more listings
+  const fetchMoreUserListings = async () => {
+    const listingsRef = collection(db, 'listing')
+    const q = query(
+      listingsRef,
+      where('userRef', '==', auth.currentUser.uid),
+      orderBy('timestamp', 'desc'),
+      startAfter(lastFetchedListing),
+      limit(10)
+    )
+    const querySnap = await getDocs(q)
+    const lastVisible = querySnap.docs[querySnap.docs.length - 1]
+    setLastFetchedListing(lastVisible)
+    const listings = []
+
+    querySnap.forEach((doc) => {
+      return listings.push({ id: doc.id, data: doc.data() })
+    })
+    setListings((prevState) => [...prevState, ...listings])
+    setLoading(false)
+  }
   const onLogout = () => {
     auth.signOut()
     navigate('/')
   }
+
+  const onDelete = async (listingId) => {
+    if (window.confirm('Are you sure you want to delete this listing?')) {
+      await deleteDoc(doc(db, 'listing', listingId))
+
+      const updatedListings = listings.filter(
+        (listing) => listing.id != listingId
+      )
+      setListings(updatedListings)
+      toast.success('Listing removed from list')
+    }
+  }
+
+  const onEdit = (listingId) => navigate(`/edit-listing/${listingId}`)
 
   const onSubmit = async (e) => {
     try {
@@ -91,6 +164,31 @@ const Profile = () => {
           <p>Sell or rent your home</p>
           <img src={ArrowRightIcon} alt="arrow right" />
         </Link>
+
+        {!loading && listings?.length > 0 && (
+          <>
+            <p className="listingText">Your Listings</p>
+            <ul className="listingsList">
+              {listings.map((listing) => (
+                <ListingItem
+                  key={listing.id}
+                  id={listing.id}
+                  listing={listing.data}
+                  onDelete={() => onDelete(listing.id)}
+                  onEdit={() => onEdit(listing.id)}
+                />
+              ))}
+            </ul>
+
+            <br />
+            <br />
+            {lastFetchedListing && (
+              <p className="loadMore" onClick={fetchMoreUserListings}>
+                Load More
+              </p>
+            )}
+          </>
+        )}
       </main>
     </div>
   )
