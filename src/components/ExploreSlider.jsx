@@ -32,7 +32,7 @@ function ExploreSlider() {
     fetchListings()
   }, [])
 
-  if (listings.length === 0) return <></>
+  if (listings && listings.length === 0) return <></>
 
   if (loading) return <Spinner />
   return (
